@@ -1,0 +1,29 @@
+# pubspec.yaml
+
+name: flutter_map_geojson_demo
+description: A Flutter app that shows how to use map and geojson.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  hooks_riverpod: ^1.0.3
+  geojson: ^0.7.0
+  flutter_map: ^6.0.0
+  flutter_map_geojson: ^1.0.5 
+
+
+  
+
+dev_dependencies:
+  mockito: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/geojson_file_1.geojson
