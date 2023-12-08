@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';//Unused import: 'package:flutter_map/flutter_map.dart'.Try removing the import directive.
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // flutter_riverpodパッケージをインポート
 import 'package:flutter/services.dart';
-import 'package:geojson/geojson.dart'; // geojsonパッケージをインポート
-import 'package:latlong2/latlong.dart'; // Unused import: 'package:flutter_map/flutter_map.dart'.Try removing the import directive.
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:latlong2/latlong.dart';
+
 void main() {
-  runApp(ProviderScope(child: MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -13,51 +14,79 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Map Demo',
-      home: MapPage(), 
+      home: MapPage(),
     );
   }
 }
 
-class MapPage extends ConsumerWidget {
-
+class MapPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) { 
+  _MapPageState createState() => _MapPageState();
+}
 
-    final AsyncValue<GeoJsonFeatureCollection> articleList = ref.watch(articleListProvider); 
+class _MapPageState extends State<MapPage> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Map Demo'),
+        title: const Text('Flutter Map Demo'),
       ),
-      body: Center(
-        child: articleList.when(
-          data: (geojson) => ListView.builder( 
-            itemCount: geojson.features.length, // The getter 'features' isn't defined for the type 'GeoJsonFeatureCollection'.Try importing the library that defines 'features', correcting the name to the name of an existing getter, or defining a getter or field named 'features'.
-            itemBuilder: (context, index) => Column(
-              children: [
-                ListTile(
-                  title: Text(geojson.features[index].title), // The getter 'features' isn't defined for the type 'GeoJsonFeatureCollection'.\Try importing the library that defines 'features', correcting the name to the name of an existing getter, or defining a getter or field named 'features'.
-                  subtitle: Text(
-                    'LGTM: ${geojson.features[index].likes_count} 
-                    'コメント: ${geojson.features[index].comments_count}'), // The getter 'features' isn't defined for the type 'GeoJsonFeatureCollection'.Try importing the library that defines 'features', correcting the name to the name of an existing getter, or defining a getter or field named 'features'.
-                  contentPadding: const EdgeInsets.all(16),
-                  tileColor: Colors.lightGreen,
+      body: FutureBuilder<String>(
+        future: rootBundle.loadString('assets/geojson_file_1.geojson'),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('エラーが発生しました。\n${snapshot.error.toString()}');
+          } else if (snapshot.hasData) {
+            final geojson = jsonDecode(snapshot.data!);
+            final features = geojson['features'] as List;
+            final markers = features.map((feature) {
+              final coordinates = feature['geometry']['coordinates'][0][0];
+              return Marker(
+                width: 80.0,
+                height: 80.0,
+                point: LatLng(coordinates[1], coordinates[0]),
+                builder: (ctx) => const Icon(Icons.location_on),
+              );
+            }).toList();
+            return FlutterMap(
+              options: MapOptions(
+                center: LatLng(35.6895, 139.6917),
+                zoom: 13.0,
+                plugins: [
+                  MarkerClusterPlugin(),
+                ],
+              ),
+              layers: [
+                TileLayerOptions(
+                  urlTemplate:
+                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  subdomains: ['a', 'b', 'c'],
                 ),
-                const SizedBox(height: 8),
+                MarkerClusterLayerOptions(
+                  maxClusterRadius: 120,
+                  size: Size(40, 40),
+                  fitBoundsOptions: FitBoundsOptions(
+                    padding: EdgeInsets.all(50),
+                  ),
+                  markers: markers,
+                  polygonOptions: PolygonOptions(
+                      borderColor: Colors.blueAccent,
+                      color: Colors.black12,
+                      borderStrokeWidth: 3),
+                  builder: (context, markers) {
+                    return FloatingActionButton(
+                      child: Text(markers.length.toString()),
+                      onPressed: null,
+                    );
+                  },
+                ),
               ],
-            ),
-          ),
-          error: (error, stackTrace) => Text('エラーが発生しました。\n${error.toString()}'),
-          loading: () => const CircularProgressIndicator(),
-        ),
+            );
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
       ),
     );
   }
 }
-
-final articleListProvider = FutureProvider<GeoJsonFeatureCollection>((ref) async { // GeoJsonFeatureCollection型を使って型を指定
-  final data = await rootBundle.loadString('assets/geojson_file_1.geojson');
-  final features = await featuresFromGeoJson(data); // featuresFromGeoJson関数を使ってGeoJSONデータを解析
-  return features;
-});
-
-

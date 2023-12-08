@@ -1,8 +1,7 @@
-# pubspec.yaml
-
-name: flutter_map_geojson_demo
+name: task2
 description: A Flutter app that shows how to use map and geojson.
 version: 1.0.0+1
+publish_to: none  
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -11,12 +10,10 @@ dependencies:
   flutter:
     sdk: flutter
   hooks_riverpod: ^1.0.3
-  geojson: ^0.7.0
-  flutter_map: ^6.0.0
-  flutter_map_geojson: ^1.0.5 
-
-
-  
+  geojson: ^1.0.0
+  #flutter_map: ^0.13.1
+  flutter_map_marker_cluster: ^0.4.0 
+  flutter_map: ^0.14.0
 
 dev_dependencies:
   mockito: ^5.0.0
