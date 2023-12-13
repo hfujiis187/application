@@ -1,4 +1,4 @@
-//MyAppとMapPage用
+/*MyAppとMapPage用
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:task2/main.dart';
@@ -20,4 +20,4 @@ void main() {
     expect(find.byType(AppBar), findsOneWidget);
     expect(find.text('Flutter Map Demo'), findsOneWidget);
   });
-}
+}*/

@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "3次元",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::6668" } },
+"features": [
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 135.494686072999144, 34.743380746096157, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 135.503209827595072, 34.737885736788122, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 135.494772608578813, 34.738448218055872, 0.0 ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 135.502257936218882, 34.7346406525511, 0.0 ] } }
+]
+}

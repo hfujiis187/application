@@ -10,17 +10,21 @@ dependencies:
   flutter:
     sdk: flutter
   hooks_riverpod: ^1.0.3
-  geojson: ^1.0.0
-  #flutter_map: ^0.13.1
-  flutter_map_marker_cluster: ^0.4.0 
   flutter_map: ^0.14.0
+  latlong2: ^0.8.0
+  geojson: ^1.0.0
+
 
 dev_dependencies:
   mockito: ^5.0.0
   flutter_test:
     sdk: flutter
+  flutter_lints: ^1.0.4
 
 flutter:
   uses-material-design: true
   assets:
     - assets/geojson_file_1.geojson
+    - assets/アーム幅.geojson
+    - assets/3次元.geojson
+
