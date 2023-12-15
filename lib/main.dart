@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // 地図の表示を制御するためのMapControllerを作成します
+  // 地図の表示を制御するため
   final MapController _mapController = MapController();
   // 地図のレイヤーを管理するリストを作成
   List<LayerOptions> _layers = [
@@ -25,19 +25,19 @@ class _MyAppState extends State<MyApp> {
         subdomains: ['a', 'b', 'c']),
   ];
 
-  //GeoJsonファイルを読み込み、解析し、マップ上に表示します。
+  //GeoJsonファイルを読み込み
   void _loadGeoJson(String path) async {
-    // GeoJsonオブジェクトを作成します。
+    // GeoJsonオブジェクト作成
     final geoJson = GeoJson();
-    // 指定されたパスからGeoJsonファイルを読み込み、解析します。
+    // 指定されたパスからGeoJsonファイルを読み込み
     await geoJson.parse(await rootBundle.loadString(path), verbose: true);
-    // 解析された各フィーチャーを処理します。
+    // 解析された各フィーチャーを処理
     geoJson.processedFeatures.listen((feature) {
       // フィーチャーがポイント型の場合
       if (feature.type == GeoJsonFeatureType.point) {
-        // ポイントのジオメトリを取得します。
+        // ポイントのジオメトリ取得
         final point = feature.geometry as GeoJsonPoint;
-        // マーカーをマップに追加します。
+        // マーカーをマップに追加
         setState(() {
           _layers.add(MarkerLayerOptions(markers: [
             Marker(
@@ -49,32 +49,30 @@ class _MyAppState extends State<MyApp> {
               ),
             )
           ]));
-          // 地図の中心座標を更新します。
+          //中心座標を更新
           _mapController.move(
               LatLng(point.geoPoint.latitude, point.geoPoint.longitude), 13.0);
         });
       }
       // フィーチャーがライン型の場合
       else if (feature.type == GeoJsonFeatureType.line) {
-        // ラインのジオメトリを取得します。
+        // ラインのジオメトリを取得
         final line = feature.geometry as GeoJsonLine;
-        // ラインの各ポイントを取得します。
+        // ラインの各ポイントを取得
         final points = line.geoSerie?.geoPoints
             ?.map((point) => LatLng(point.latitude, point.longitude))
             .toList();
-        // ポイントが存在する場合のみ、ポリラインをマップに追加します。
+        // ポイントが存在する場合のみ、ポリラインをマップに追加
         if (points != null && points.isNotEmpty) {
           setState(() {
-  _layers.add(PolylineLayerOptions(polylines: [
-    Polyline(
-      points: points,
-      color: Colors.red,
-      strokeWidth: 4.0,
-    )
-  ]));
-});
-
-            // 地図の中心座標を更新します。
+            _layers.add(PolylineLayerOptions(polylines: [
+              Polyline(
+                points: points,
+                color: Colors.red,
+                strokeWidth: 8.0,
+              )
+            ]));
+            // 地図の中心座標を更新
             final avgLat =
                 points.map((p) => p.latitude).reduce((a, b) => a + b) /
                     points.length;
@@ -88,15 +86,15 @@ class _MyAppState extends State<MyApp> {
 
       // フィーチャーがマルチポリゴン型の場合
       else if (feature.type == GeoJsonFeatureType.multipolygon) {
-        // マルチポリゴンのジオメトリを取得します。
+        // マルチポリゴンのジオメトリを取得
         final multipolygon = feature.geometry as GeoJsonMultiPolygon;
         // 各ポリゴンを処理します。
         for (final polygon in multipolygon.polygons) {
-          // ポリゴンの各ポイントを取得します。
+          // ポリゴンの各ポイントを取得
           final points = polygon.geoSeries.first.geoPoints
               .map((point) => LatLng(point.latitude, point.longitude))
               .toList();
-          // ポリラインをマップに追加します。
+          // ポリラインをマップに追加
           setState(() {
             _layers.add(PolylineLayerOptions(polylines: [
               Polyline(
@@ -106,52 +104,6 @@ class _MyAppState extends State<MyApp> {
               )
             ]));
           });
-        }
-      }
-      // フィーチャーがジオメトリコレクション型の場合
-      else if (feature.type == GeoJsonFeatureType.geometryCollection) {
-        // ジオメトリコレクションを取得します。
-        final geometryCollection =
-            feature.geometry as GeoJsonGeometryCollection;
-        // ジオメトリコレクションがnullでない場合
-        if (geometryCollection.geometries != null) {
-          // 各ジオメトリを処理します。
-          for (final geometry in geometryCollection.geometries!) {
-            // ジオメトリがジオメトリコレクション型の場合
-            if (geometry?.type != null &&
-                geometry?.type == GeoJsonFeatureType.geometryCollection) {
-              // 内部のジオメトリコレクションを取得します。
-              final geometryCollectionInner =
-                  geometry as GeoJsonGeometryCollection;
-              // 内部のジオメトリコレクションがnullでない場合
-              if (geometryCollectionInner.geometries != null) {
-                // 各内部ジオメトリを処理します。
-                for (final geometryInner
-                    in geometryCollectionInner.geometries!) {
-                  // 内部ジオメトリがポイント型の場合
-                  if (geometryInner?.type != null &&
-                      geometryInner?.type == GeoJsonFeatureType.point) {
-                    // ポイントを取得します。
-                    final point = geometryInner as GeoJsonPoint;
-                    // ポイントを取得します。
-                    final points = [
-                      LatLng(point.geoPoint.latitude, point.geoPoint.longitude)
-                    ];
-                    // ポイントをマップに追加します。
-                    setState(() {
-                      _layers.add(PolylineLayerOptions(polylines: [
-                        Polyline(
-                          points: points,
-                          color: Colors.red,
-                          strokeWidth: 4.0,
-                        )
-                      ]));
-                    });
-                  }
-                }
-              }
-            }
-          }
         }
       }
     });
@@ -190,7 +142,7 @@ class _MyAppState extends State<MyApp> {
                 mapController: _mapController,
                 options: MapOptions(
                   // 地図の初期表示を設定
-                  center: LatLng(35.6895, 139.6917),
+                  center: LatLng(36.528331476216614, 136.714047801985316),
                   zoom: 13.0,
                 ),
                 layers: _layers,
