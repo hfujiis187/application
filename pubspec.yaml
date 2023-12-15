@@ -24,7 +24,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/geojson_file_1.geojson
     - assets/アーム幅.geojson
     - assets/3次元.geojson
 
