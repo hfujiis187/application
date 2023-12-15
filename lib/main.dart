@@ -123,7 +123,7 @@ class _MyAppState extends State<MyApp> {
                   ElevatedButton(
                       //ボタン１
                       onPressed: () {
-                        print('Button pressed'); // ボタン確認
+                        print('Button pressed'); // ボタン確認用
                         setState(() {
                           _layers = _layers.sublist(0, 1);
                         });
